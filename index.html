@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hmam Nooreldeen — Gameplay & AI Systems Programmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0d12;
+    --bg-alt: #0d1117;
+    --panel: #12161d;
+    --panel-border: #1f2733;
+    --text: #e8edf2;
+    --text-muted: #828e9c;
+    --accent: #5ef0d8;     /* balanced / cyan */
+    --accent-dim: #2a4a47;
+    --warn: #ff5d73;       /* aggressive / counter */
+    --amber: #ffb86b;      /* panic / heavy pressure */
+    --green: #7cffb2;      /* balanced / normal */
+    --defense: #6fb8ff;    /* defensive / chase aggressive */
+    --radius: 4px;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* background grid texture */
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(94,240,216,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(94,240,216,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(circle at 50% 0%, rgba(0,0,0,0.9), transparent 70%);
+  }
+
+  .container{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1,h2,h3,h4{
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content:"";
+    display:inline-block;
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+
+  /* ================= NAV ================= */
+  nav{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(10,13,18,0.75);
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .nav-inner{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo{
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--text);
+  }
+  .logo span{ color: var(--accent); }
+  .nav-links{
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a{
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover{ color: var(--accent); }
+
+  @media (max-width: 700px){
+    .nav-links{ display:none; }
+  }
+
+  /* ================= HERO ================= */
+  .hero{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 90px;
+    padding-bottom: 60px;
+  }
+  .hero-grid{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: center;
+    width: 100%;
+  }
+  @media (max-width: 880px){
+    .hero-grid{ grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  .hero h1{
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+  .hero h1 .highlight{ color: var(--accent); }
+  .hero p.lead{
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .btn-row{ display:flex; gap: 16px; flex-wrap: wrap; }
+  .btn{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    padding: 14px 26px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--panel-border);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary{
+    background: var(--accent);
+    color: #06110f;
+    border-color: var(--accent);
+    box-shadow: 0 0 24px rgba(94,240,216,0.25);
+  }
+  .btn-primary:hover{ box-shadow: 0 0 36px rgba(94,240,216,0.45); }
+  .btn-secondary{
+    color: var(--text);
+    background: transparent;
+  }
+  .btn-secondary:hover{ border-color: var(--accent); color: var(--accent); }
+
+  /* ===== Signature: Adaptive Boss AI Monitor ===== */
+  .hud{
+    background: linear-gradient(180deg, var(--panel) 0%, #0e1218 100%);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(94,240,216,0.06), inset 0 0 40px rgba(0,0,0,0.4);
+  }
+  .hud::before{
+    content:"";
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+  }
+  .hud-header{
+    display:flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    position: relative; z-index:1;
+  }
+  .hud-header .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    display:inline-block; margin-right: 8px;
+    animation: pulse 2s infinite ease-in-out;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity: 1; }
+    50%{ opacity: 0.35; }
+  }
+
+  .hud-row{ margin-bottom: 22px; position: relative; z-index: 1; }
+  .hud-label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display:flex; justify-content: space-between;
+  }
+  .hud-label .value{
+    font-weight: 600;
+    transition: color 0.4s ease;
+  }
+  .bar-track{
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height: 100%;
+    width: 50%;
+    border-radius: 2px;
+    transition: width 0.6s ease, background 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .hud-mode{
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--panel-border);
+    position: relative; z-index:1;
+  }
+  .hud-mode .hud-label{ margin-bottom: 6px; }
+  .hud-mode-name{
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: color 0.4s ease, text-shadow 0.4s ease;
+  }
+  .hud-mode-desc{
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 6px;
+    min-height: 1.6em;
+  }
+
+  .hud-footer{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-top: 20px;
+    text-align: right;
+    position: relative; z-index:1;
+  }
+
+  /* ================= SECTION GENERAL ================= */
+  section{ padding: 110px 0; border-bottom: 1px solid var(--panel-border); }
+  section:last-of-type{ border-bottom: none; }
+  .section-head{ margin-bottom: 56px; }
+  .section-head h2{ font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  .section-head p{ color: var(--text-muted); max-width: 600px; margin-top: 14px; }
+
+  /* ================= ABOUT ================= */
+  .about-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 880px){ .about-grid{ grid-template-columns: 1fr; } }
+  .about-grid p{ color: var(--text-muted); margin-bottom: 16px; }
+  .about-grid strong{ color: var(--text); }
+
+  .stat-list{ display: flex; flex-direction: column; gap: 18px; }
+  .stat{
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .stat .label{ font-size: 0.85rem; color: var(--text-muted); }
+  .stat .val{ font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 0.85rem; text-align:right; }
+
+  /* ================= SKILLS ================= */
+  .skills-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 880px){ .skills-grid{ grid-template-columns: 1fr; } }
+  .skill-card{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .skill-card:hover{ border-color: var(--accent); transform: translateY(-3px); }
+  .skill-card h3{
+    font-size: 1.1rem;
+    margin-bottom: 18px;
+    color: var(--text);
+    display:flex; align-items:center; gap:10px;
+  }
+  .skill-card h3::before{
+    content:"";
+    width: 6px; height: 6px;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    border-radius: 50%;
+  }
+  .tag-list{ display:flex; flex-wrap: wrap; gap: 8px; }
+  .tag{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    border: 1px solid var(--panel-border);
+    padding: 5px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ================= PROJECTS ================= */
+  .project-card{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .project-media{
+    aspect-ratio: 16/7;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 12px),
+      var(--bg-alt);
+    border-bottom: 1px solid var(--panel-border);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    gap: 10px;
+    text-align: center;
+    padding: 20px;
+  }
+  .project-media .ph-icon{
+    width: 44px; height: 44px;
+    border: 1px dashed var(--panel-border);
+    border-radius: 6px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 1.4rem;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+  .project-body{ padding: 36px; }
+  .project-tagrow{ display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 18px; }
+  .project-body h3{ font-size: 1.5rem; margin-bottom: 4px; }
+  .project-sub{ color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.1em; margin-bottom: 16px; text-transform: uppercase; }
+  .project-body > p{ color: var(--text-muted); margin-bottom: 24px; max-width: 720px; }
+
+  .feature-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 700px){ .feature-grid{ grid-template-columns: 1fr; } }
+  .feature-item{
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 0.88rem;
+  }
+  .feature-item .ft-title{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .feature-item .ft-desc{ color: var(--text-muted); }
+
+  .links-row{ display:flex; gap: 14px; flex-wrap: wrap; }
+  .links-row a{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border: 1px solid var(--panel-border);
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .links-row a:hover{ color: var(--accent); border-color: var(--accent); }
+
+  /* secondary project (smaller) */
+  .project-card.minor{ display:grid; grid-template-columns: 1fr 1.4fr; }
+  .project-card.minor .project-media{ aspect-ratio: auto; height: 100%; border-right: 1px solid var(--panel-border); border-bottom: none; }
+  @media (max-width: 800px){
+    .project-card.minor{ grid-template-columns: 1fr; }
+    .project-card.minor .project-media{ aspect-ratio: 16/8; border-right: none; border-bottom: 1px solid var(--panel-border); }
+  }
+
+  /* ================= CONTACT ================= */
+  .contact-grid{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 880px){ .contact-grid{ grid-template-columns: 1fr; } }
+  .contact-card{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 36px;
+  }
+  .contact-row{
+    display:flex; justify-content: space-between; align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .contact-row:last-child{ border-bottom: none; }
+  .contact-row .label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .contact-row a, .contact-row span.val{
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .contact-row a:hover{ color: var(--accent); }
+
+  .pref-list{ color: var(--text-muted); font-size: 0.9rem; margin-top: 18px; }
+  .pref-list span{ color: var(--text); }
+
+  footer{
+    text-align: center;
+    padding: 36px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* scroll reveal */
+  .reveal{
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; animation: none !important; }
+    .reveal{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">HMAM<span>.</span>DEV</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Gameplay &amp; AI Systems Programmer</div>
+      <h1>Building bosses that <span class="highlight">read the player</span> back.</h1>
+      <p class="lead">
+        Final-year Game Technology student at Universiti Teknikal Malaysia Melaka,
+        building an Unreal Engine 5 tool that lets developers create adaptive boss
+        encounters &mdash; no AI programming background required.
+      </p>
+      <div class="btn-row">
+        <a href="#projects" class="btn btn-primary">View the Adaptive Combat Tool</a>
+        <a href="#contact" class="btn btn-secondary">Get in touch</a>
+      </div>
+    </div>
+
+    <!-- Signature element: live Adaptive Boss AI Monitor -->
+    <div class="hud">
+      <div class="hud-header">
+        <span><span class="dot"></span>Adaptive Combat Tool</span>
+        <span>Live Encounter Monitor</span>
+      </div>
+
+      <div class="hud-row">
+        <div class="hud-label"><span>Player Intent</span> <span class="value" id="intent-label">Balanced</span></div>
+        <div class="bar-track"><div class="bar-fill" id="intent-bar"></div></div>
+      </div>
+
+      <div class="hud-row">
+        <div class="hud-label"><span>Attack Score</span> <span class="value" id="attack-val">42%</span></div>
+        <div class="bar-track"><div class="bar-fill" id="attack-bar"></div></div>
+      </div>
+
+      <div class="hud-row">
+        <div class="hud-label"><span>Dodge Score</span> <span class="value" id="dodge-val">38%</span></div>
+        <div class="bar-track"><div class="bar-fill" id="dodge-bar"></div></div>
+      </div>
+
+      <div class="hud-mode">
+        <div class="hud-label"><span>Boss Response</span></div>
+        <div class="hud-mode-name" id="mode-name">Normal</div>
+        <div class="hud-mode-desc" id="mode-desc">Standard combat behaviour while the system reads the player.</div>
+      </div>
+
+      <div class="hud-footer">Classification interval: 1.5s &middot; Source: FYP build</div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid reveal">
+      <div>
+        <div class="eyebrow">About</div>
+        <h2 style="margin-bottom:20px;">Gameplay systems, AI design, and developer tools.</h2>
+        <p>
+          I'm <strong>Hmam Nooreldeen Abdalla Altoom</strong>, a final-year
+          <strong>Bachelor of Information Technology (Game Technology)</strong> student
+          at <strong>Universiti Teknikal Malaysia Melaka</strong>. My work sits at the
+          intersection of gameplay programming, combat design, and AI systems &mdash;
+          building tools that make advanced techniques accessible to small teams.
+        </p>
+        <p>
+          My final year project, the <strong>Adaptive Combat Tool</strong>, is an Unreal
+          Engine 5 Editor Utility Widget that analyses player behaviour in real time and
+          dynamically reshapes boss encounters &mdash; switching between Normal, Counter,
+          Chase Aggressive, and Heavy Pressure modes based on how the player is playing.
+        </p>
+        <p>
+          I'm looking for <strong>Game Programming, Gameplay Programmer, AI Programmer,
+          or Technical Designer</strong> roles on PC or console projects, based in
+          <strong>Malaysia or Singapore</strong>.
+        </p>
+      </div>
+
+      <div class="stat-list">
+        <div class="stat"><span class="label">Engine</span><span class="val">Unreal Engine 5 &middot; Blueprints &middot; C++</span></div>
+        <div class="stat"><span class="label">Focus</span><span class="val">Adaptive AI &middot; Combat Systems &middot; Tools</span></div>
+        <div class="stat"><span class="label">3D &amp; Animation</span><span class="val">Blender &middot; Retargeting &middot; Gaea</span></div>
+        <div class="stat"><span class="label">Education</span><span class="val">B.IT (Game Technology), UTeM</span></div>
+        <div class="stat"><span class="label">Targeting</span><span class="val">Malaysia &middot; Singapore &middot; PC/Console</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SKILLS ================= -->
+<section id="skills">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Skills</div>
+      <h2>What I work with</h2>
+      <p>A toolkit built around gameplay programming, AI-driven systems, and the
+      environment and animation pipelines that support them.</p>
+    </div>
+
+    <div class="skills-grid reveal">
+      <div class="skill-card">
+        <h3>Game Development</h3>
+        <div class="tag-list">
+          <span class="tag">Unreal Engine 5</span>
+          <span class="tag">Blueprints</span>
+          <span class="tag">C++ (Basic)</span>
+          <span class="tag">AI Systems Design</span>
+          <span class="tag">Combat Systems</span>
+          <span class="tag">Gameplay Programming</span>
+          <span class="tag">Tool Development</span>
+          <span class="tag">Editor Utility Widgets</span>
+          <span class="tag">State Machines</span>
+          <span class="tag">Behaviour Systems</span>
+          <span class="tag">Combat Balancing</span>
+          <span class="tag">Level Design</span>
+          <span class="tag">GDD Writing</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3>Environment &amp; World Building</h3>
+        <div class="tag-list">
+          <span class="tag">Landscape Creation</span>
+          <span class="tag">Terrain Generation</span>
+          <span class="tag">Gaea</span>
+          <span class="tag">Environment Design</span>
+          <span class="tag">Map Blockouts</span>
+          <span class="tag">Navigation Setup</span>
+          <span class="tag">Lighting Basics</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3>Art &amp; Content Creation</h3>
+        <div class="tag-list">
+          <span class="tag">Blender</span>
+          <span class="tag">Basic Animation</span>
+          <span class="tag">Asset Integration</span>
+          <span class="tag">Character Setup</span>
+          <span class="tag">Animation Retargeting</span>
+          <span class="tag">Animation Integration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="projects">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Featured Project</div>
+      <h2>Adaptive Combat Tool</h2>
+      <p>A Boss Combat System for Unreal Engine 5 &mdash; helping developers ship
+      adaptive boss encounters without writing AI logic from scratch.</p>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-media">
+        <div class="ph-icon">&#9658;</div>
+        Gameplay demo placeholder &mdash; add a video or GIF of the boss switching modes here
+      </div>
+      <div class="project-body">
+        <div class="project-tagrow">
+          <span class="tag">Unreal Engine 5</span>
+          <span class="tag">Editor Utility Widget</span>
+          <span class="tag">Adaptive AI</span>
+          <span class="tag">Final Year Project</span>
+        </div>
+        <h3>An adaptive boss, built for indie teams</h3>
+        <div class="project-sub">Real-time player intent classification &rarr; dynamic boss behaviour</div>
+        <p>
+          The tool tracks player attacks, dodges, distance, and health, then classifies
+          the player's intent &mdash; Aggressive, Defensive, Panic, or Balanced &mdash; and
+          adjusts the boss's behaviour accordingly. Developers can use it in Fixed mode
+          for a single hand-picked behaviour, or Adaptive mode to let the boss respond
+          to the player automatically.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="ft-title">Boss Modes</div>
+            <div class="ft-desc">Normal, Counter, Chase Aggressive, and Heavy Pressure &mdash; each tuned to respond to a different player intent.</div>
+          </div>
+          <div class="feature-item">
+            <div class="ft-title">Intent Tuning</div>
+            <div class="ft-desc">Adjustable attack/dodge score gain, decay rate, classification interval, and panic/balance thresholds.</div>
+          </div>
+          <div class="feature-item">
+            <div class="ft-title">Combat Configuration</div>
+            <div class="ft-desc">Per-mode tuning of attack cooldown, attack/stop range, movement speed, and damage.</div>
+          </div>
+          <div class="feature-item">
+            <div class="ft-title">Player Integration</div>
+            <div class="ft-desc">Drop in a pre-built player setup, or wire the tool into an existing project with auto-setup and validation tools.</div>
+          </div>
+          <div class="feature-item">
+            <div class="ft-title">Player Systems</div>
+            <div class="ft-desc">Light/heavy combo attacks, directional dodge, sprint, weapon hit detection, and combo queueing.</div>
+          </div>
+          <div class="feature-item">
+            <div class="ft-title">Boss Systems</div>
+            <div class="ft-desc">AI chasing and attacking, adaptive mode switching, weapon collision, and animation-driven combat.</div>
+          </div>
+        </div>
+
+        <div class="links-row">
+          <a href="#">Project devlog &#8599;</a>
+          <a href="#">Gameplay demo &#8599;</a>
+          <a href="#">FYP report &#8599;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary project -->
+    <div class="project-card minor reveal">
+      <div class="project-media">
+        <div class="ph-icon">&#9656;</div>
+        Screenshot placeholder
+      </div>
+      <div class="project-body">
+        <div class="project-tagrow">
+          <span class="tag">Unreal Engine</span>
+          <span class="tag">Survival Horror</span>
+          <span class="tag">Team Project</span>
+        </div>
+        <h3>Whispers of the Peak</h3>
+        <div class="project-sub">Workshop II Project &mdash; first-person survival horror</div>
+        <p>
+          A team-developed first-person survival horror game built in Unreal Engine.
+          I worked on gameplay design, combat and gameplay systems, core mechanics
+          planning, and technical implementation alongside the rest of the team.
+        </p>
+        <div class="links-row">
+          <a href="#">Project page &#8599;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid reveal">
+      <div>
+        <div class="eyebrow">Contact</div>
+        <h2 style="margin-bottom:20px;">Let's build something that fights back.</h2>
+        <p style="color:var(--text-muted); max-width:480px;">
+          Open to Game Programming internships and Gameplay/AI Programmer or
+          Technical Designer roles on PC and console projects.
+        </p>
+        <div class="pref-list">
+          Currently targeting: <span>Malaysia</span> &middot; <span>Singapore</span> &middot; <span>PC / Console</span>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-row">
+          <span class="label">Email</span>
+          <a href="mailto:Hmamnooraldeen@gmail.com">Hmamnooraldeen@gmail.com</a>
+        </div>
+        <div class="contact-row">
+          <span class="label">LinkedIn</span>
+          <a href="https://www.linkedin.com/in/hmam-nooreldeen-8095281a9/" target="_blank">linkedin.com/in/hmam-nooreldeen</a>
+        </div>
+        <div class="contact-row">
+          <span class="label">Location</span>
+          <span class="val">Malaysia</span>
+        </div>
+        <div class="contact-row">
+          <span class="label">Resume</span>
+          <a href="#">Download PDF &#8599;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Hmam Nooreldeen Abdalla Altoom &middot; Built with Unreal Engine 5 in mind
+</footer>
+
+<script>
+  // Adaptive Boss AI Monitor — cycles through the FYP's intent → boss mode mapping
+  const states = [
+    {
+      intent: "Balanced", attack: 48, dodge: 45,
+      mode: "Normal", desc: "Standard combat behaviour while the system reads the player.",
+      color: "var(--green)"
+    },
+    {
+      intent: "Aggressive", attack: 86, dodge: 22,
+      mode: "Counter", desc: "Punishes aggressive players who attack frequently.",
+      color: "var(--warn)"
+    },
+    {
+      intent: "Defensive", attack: 18, dodge: 81,
+      mode: "Chase Aggressive", desc: "Pressures defensive players who avoid combat.",
+      color: "var(--defense)"
+    },
+    {
+      intent: "Panic", attack: 30, dodge: 64,
+      mode: "Heavy Pressure", desc: "Overwhelms players identified as low-health and cautious.",
+      color: "var(--amber)"
+    },
+  ];
+
+  let i = 0;
+  const intentLabel = document.getElementById('intent-label');
+  const intentBar = document.getElementById('intent-bar');
+  const attackVal = document.getElementById('attack-val');
+  const attackBar = document.getElementById('attack-bar');
+  const dodgeVal = document.getElementById('dodge-val');
+  const dodgeBar = document.getElementById('dodge-bar');
+  const modeName = document.getElementById('mode-name');
+  const modeDesc = document.getElementById('mode-desc');
+
+  function applyState(s){
+    intentLabel.textContent = s.intent;
+    intentLabel.style.color = s.color;
+    intentBar.style.width = Math.max(s.attack, s.dodge) + "%";
+    intentBar.style.background = s.color;
+    intentBar.style.boxShadow = "0 0 12px " + s.color;
+
+    attackVal.textContent = s.attack + "%";
+    attackBar.style.width = s.attack + "%";
+    attackBar.style.background = "var(--warn)";
+    attackBar.style.boxShadow = "0 0 8px var(--warn)";
+
+    dodgeVal.textContent = s.dodge + "%";
+    dodgeBar.style.width = s.dodge + "%";
+    dodgeBar.style.background = "var(--defense)";
+    dodgeBar.style.boxShadow = "0 0 8px var(--defense)";
+
+    modeName.textContent = s.mode;
+    modeName.style.color = s.color;
+    modeName.style.textShadow = "0 0 16px " + s.color;
+    modeDesc.textContent = s.desc;
+  }
+
+  applyState(states[0]);
+  setInterval(() => {
+    i = (i + 1) % states.length;
+    applyState(states[i]);
+  }, 3200);
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
