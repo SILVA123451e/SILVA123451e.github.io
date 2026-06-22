@@ -668,9 +668,18 @@
     </div>
 
     <div class="project-card reveal">
-      <div class="project-media">
-        <div class="ph-icon">&#9658;</div>
-        Gameplay demo placeholder &mdash; add a video or GIF of the boss switching modes here
+      <div class="project-media" style="display:block;padding:0;background:#0a0d12;position:relative;aspect-ratio:16/7;">
+        <div id="gallery" style="width:100%;height:100%;position:relative;overflow:hidden;">
+          <img src="tool-1-welcome.png"     class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:1;transition:opacity 0.4s ease;">
+          <img src="tool-2-boss-setup.png"  class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-3-player-setup.png" class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-4-ai-behavior.png" class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-5-mode-editor.png" class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+        </div>
+        <button onclick="moveSlide(-1)" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8249;</button>
+        <button onclick="moveSlide(1)"  style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8250;</button>
+        <div id="gdots" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:10;"></div>
+        <div id="glabel" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#828e9c;background:rgba(10,13,18,0.7);padding:4px 12px;border-radius:3px;white-space:nowrap;z-index:10;"></div>
       </div>
       <div class="project-body">
         <div class="project-tagrow">
@@ -868,6 +877,38 @@
     });
   }, { threshold: 0.15 });
   revealEls.forEach(el => observer.observe(el));
+
+  // ---- Screenshot Gallery ----
+  const slides = document.querySelectorAll('.gslide');
+  const dotsEl = document.getElementById('gdots');
+  const labelEl = document.getElementById('glabel');
+  const labels = ['Welcome — Boss Selection','Boss Setup','Player Setup','AI Behaviour','Mode Editor'];
+  let cur = 0;
+
+  // build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'width:7px;height:7px;border-radius:50%;background:' + (i===0?'#5ef0d8':'rgba(255,255,255,0.2)') + ';cursor:pointer;transition:background 0.3s;';
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n){
+    slides[cur].style.opacity = '0';
+    dotsEl.children[cur].style.background = 'rgba(255,255,255,0.2)';
+    cur = (n + slides.length) % slides.length;
+    slides[cur].style.opacity = '1';
+    dotsEl.children[cur].style.background = '#5ef0d8';
+    labelEl.textContent = labels[cur];
+  }
+
+  function moveSlide(dir){ goTo(cur + dir); }
+
+  // init label
+  if(labelEl) labelEl.textContent = labels[0];
+
+  // auto-advance every 4s
+  setInterval(() => moveSlide(1), 4000);
 </script>
 
 </body>
