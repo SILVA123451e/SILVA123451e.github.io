@@ -133,15 +133,8 @@
     padding-top: 90px;
     padding-bottom: 60px;
   }
-  .hero-grid{
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 56px;
-    align-items: center;
-    width: 100%;
-  }
-  @media (max-width: 880px){
-    .hero-grid{ grid-template-columns: 1fr; gap: 48px; }
+  .hero-solo{
+    max-width: 760px;
   }
 
   .hero h1{
@@ -152,9 +145,56 @@
   .hero h1 .highlight{ color: var(--accent); }
   .hero p.lead{
     color: var(--text-muted);
-    font-size: 1.05rem;
-    max-width: 480px;
+    font-size: 1.1rem;
+    max-width: 560px;
     margin-bottom: 32px;
+  }
+
+  .hero-facts{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 48px;
+  }
+  .hf-item{
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hf-label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .hf-val{ font-size: 0.85rem; color: var(--text); }
+
+  .scroll-cue{
+    display: inline-flex;
+    margin-top: 64px;
+    width: 26px; height: 42px;
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 8px;
+    text-decoration: none;
+  }
+  .scroll-cue span{
+    width: 4px; height: 8px;
+    border-radius: 2px;
+    background: var(--accent);
+    animation: scrollcue 1.8s infinite ease;
+  }
+  @keyframes scrollcue{
+    0%{ transform: translateY(0); opacity: 1; }
+    60%{ transform: translateY(10px); opacity: 0.2; }
+    100%{ transform: translateY(0); opacity: 0; }
   }
 
   .btn-row{ display:flex; gap: 16px; flex-wrap: wrap; }
@@ -183,108 +223,6 @@
     background: transparent;
   }
   .btn-secondary:hover{ border-color: var(--accent); color: var(--accent); }
-
-  /* ===== Signature: Adaptive Boss AI Monitor ===== */
-  .hud{
-    background: linear-gradient(180deg, var(--panel) 0%, #0e1218 100%);
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(94,240,216,0.06), inset 0 0 40px rgba(0,0,0,0.4);
-  }
-  .hud::before{
-    content:"";
-    position:absolute; inset:0;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.015) 0px,
-      rgba(255,255,255,0.015) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    pointer-events:none;
-  }
-  .hud-header{
-    display:flex; justify-content: space-between; align-items: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 22px;
-    position: relative; z-index:1;
-  }
-  .hud-header .dot{
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
-    display:inline-block; margin-right: 8px;
-    animation: pulse 2s infinite ease-in-out;
-  }
-  @keyframes pulse{
-    0%,100%{ opacity: 1; }
-    50%{ opacity: 0.35; }
-  }
-
-  .hud-row{ margin-bottom: 22px; position: relative; z-index: 1; }
-  .hud-label{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    display:flex; justify-content: space-between;
-  }
-  .hud-label .value{
-    font-weight: 600;
-    transition: color 0.4s ease;
-  }
-  .bar-track{
-    height: 8px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px;
-    overflow:hidden;
-  }
-  .bar-fill{
-    height: 100%;
-    width: 50%;
-    border-radius: 2px;
-    transition: width 0.6s ease, background 0.4s ease, box-shadow 0.4s ease;
-  }
-
-  .hud-mode{
-    margin-top: 28px;
-    padding-top: 22px;
-    border-top: 1px dashed var(--panel-border);
-    position: relative; z-index:1;
-  }
-  .hud-mode .hud-label{ margin-bottom: 6px; }
-  .hud-mode-name{
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    transition: color 0.4s ease, text-shadow 0.4s ease;
-  }
-  .hud-mode-desc{
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 6px;
-    min-height: 1.6em;
-  }
-
-  .hud-footer{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    margin-top: 20px;
-    text-align: right;
-    position: relative; z-index:1;
-  }
 
   /* ================= SECTION GENERAL ================= */
   section{ padding: 110px 0; border-bottom: 1px solid var(--panel-border); }
@@ -318,10 +256,10 @@
   /* ================= SKILLS ================= */
   .skills-grid{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
-  @media (max-width: 880px){ .skills-grid{ grid-template-columns: 1fr; } }
+  @media (max-width: 700px){ .skills-grid{ grid-template-columns: 1fr; } }
   .skill-card{
     background: var(--panel);
     border: 1px solid var(--panel-border);
@@ -513,51 +451,27 @@
 
 <!-- ================= HERO ================= -->
 <header class="hero">
-  <div class="container hero-grid">
-    <div>
-      <div class="eyebrow">Gameplay &amp; AI Systems Programmer</div>
-      <h1>Building bosses that <span class="highlight">read the player</span> back.</h1>
-      <p class="lead">
-        Final-year Game Technology student at Universiti Teknikal Malaysia Melaka,
-        building an Unreal Engine 5 tool that lets developers create adaptive boss
-        encounters &mdash; no AI programming background required.
-      </p>
-      <div class="btn-row">
-        <a href="#projects" class="btn btn-primary">View the Adaptive Combat Tool</a>
-        <a href="#contact" class="btn btn-secondary">Get in touch</a>
-      </div>
+  <div class="container hero-solo">
+    <div class="eyebrow">Gameplay &amp; AI Systems Programmer</div>
+    <h1>Gameplay systems and <span class="highlight">AI-driven</span> combat, built in Unreal Engine 5.</h1>
+    <p class="lead">
+      Gameplay programmer working on combat systems, AI behaviour, and core mechanics
+      in Unreal Engine 5.
+    </p>
+    <div class="btn-row">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-secondary">Get in touch</a>
     </div>
 
-    <!-- Signature element: live Adaptive Boss AI Monitor -->
-    <div class="hud">
-      <div class="hud-header">
-        <span><span class="dot"></span>Adaptive Combat Tool</span>
-        <span>Live Encounter Monitor</span>
-      </div>
-
-      <div class="hud-row">
-        <div class="hud-label"><span>Player Intent</span> <span class="value" id="intent-label">Balanced</span></div>
-        <div class="bar-track"><div class="bar-fill" id="intent-bar"></div></div>
-      </div>
-
-      <div class="hud-row">
-        <div class="hud-label"><span>Attack Score</span> <span class="value" id="attack-val">42%</span></div>
-        <div class="bar-track"><div class="bar-fill" id="attack-bar"></div></div>
-      </div>
-
-      <div class="hud-row">
-        <div class="hud-label"><span>Dodge Score</span> <span class="value" id="dodge-val">38%</span></div>
-        <div class="bar-track"><div class="bar-fill" id="dodge-bar"></div></div>
-      </div>
-
-      <div class="hud-mode">
-        <div class="hud-label"><span>Boss Response</span></div>
-        <div class="hud-mode-name" id="mode-name">Normal</div>
-        <div class="hud-mode-desc" id="mode-desc">Standard combat behaviour while the system reads the player.</div>
-      </div>
-
-      <div class="hud-footer">Classification interval: 1.5s &middot; Source: FYP build</div>
+    <div class="hero-facts">
+      <div class="hf-item"><span class="hf-label">Engine</span><span class="hf-val">Unreal Engine 5 &middot; Blueprints &middot; C++</span></div>
+      <div class="hf-item"><span class="hf-label">Focus</span><span class="hf-val">Adaptive AI &middot; Combat Systems &middot; Tools</span></div>
+      <div class="hf-item"><span class="hf-label">Based in</span><span class="hf-val">Malaysia &middot; Open to relocation/remote</span></div>
     </div>
+
+    <a href="#about" class="scroll-cue" aria-label="Scroll down">
+      <span></span>
+    </a>
   </div>
 </header>
 
@@ -569,30 +483,25 @@
         <div class="eyebrow">About</div>
         <h2 style="margin-bottom:20px;">Gameplay systems, AI design, and developer tools.</h2>
         <p>
-          I'm <strong>Hmam Nooreldeen Abdalla Altoom</strong>, a final-year
-          <strong>Bachelor of Information Technology (Game Technology)</strong> student
-          at <strong>Universiti Teknikal Malaysia Melaka</strong>. My work sits at the
-          intersection of gameplay programming, combat design, and AI systems &mdash;
-          building tools that make advanced techniques accessible to small teams.
+          I'm <strong>Hmam Nooreldeen Abdalla Altoom</strong>, a gameplay programmer
+          working across combat systems, AI behaviour, and full-pipeline execution.
+          I like owning ideas end-to-end &mdash; designing a system and building it
+          myself &mdash; and that's pushed me into environment art, animation, and
+          audio along the way. I'm not trying to be a specialist in those, but I
+          enjoy them and I'm actively getting better at them.
         </p>
         <p>
-          My final year project, the <strong>Adaptive Combat Tool</strong>, is an Unreal
-          Engine 5 Editor Utility Widget that analyses player behaviour in real time and
-          dynamically reshapes boss encounters &mdash; switching between Normal, Counter,
-          Chase Aggressive, and Heavy Pressure modes based on how the player is playing.
+          My focus is gameplay programming and AI-driven combat.
         </p>
         <p>
-          I'm looking for <strong>Game Programming, Gameplay Programmer, AI Programmer,
-          or Technical Designer</strong> roles &mdash; open to opportunities
-          worldwide, on-site or remote.
+          I'm looking for <strong>Gameplay Programmer, Game Programmer, or AI
+          Programmer</strong> roles &mdash; open to relocation or remote.
         </p>
       </div>
 
       <div class="stat-list">
-        <div class="stat"><span class="label">Engine</span><span class="val">Unreal Engine 5 &middot; Blueprints &middot; C++</span></div>
-        <div class="stat"><span class="label">Focus</span><span class="val">Adaptive AI &middot; Combat Systems &middot; Tools</span></div>
-        <div class="stat"><span class="label">3D &amp; Animation</span><span class="val">Blender &middot; Retargeting &middot; Gaea</span></div>
         <div class="stat"><span class="label">Education</span><span class="val">B.IT (Game Technology), UTeM</span></div>
+        <div class="stat"><span class="label">3D &amp; Animation</span><span class="val">Blender &middot; Retargeting &middot; Gaea</span></div>
         <div class="stat"><span class="label">Availability</span><span class="val">Open to relocation &middot; Remote</span></div>
       </div>
     </div>
@@ -611,47 +520,31 @@
 
     <div class="skills-grid reveal">
       <div class="skill-card">
-        <h3>Game Development</h3>
+        <h3>Gameplay Programming</h3>
         <div class="tag-list">
           <span class="tag">Unreal Engine 5</span>
           <span class="tag">Blueprints</span>
-          <span class="tag">C++ (Intermediate)</span>
+          <span class="tag">C++</span>
           <span class="tag">AI Systems Design</span>
           <span class="tag">Combat Systems</span>
           <span class="tag">Gameplay Programming</span>
-          <span class="tag">Tool Development</span>
           <span class="tag">Editor Utility Widgets</span>
           <span class="tag">State Machines</span>
-          <span class="tag">Behaviour Systems</span>
+          <span class="tag">Player-Intent Classification</span>
           <span class="tag">Combat Balancing</span>
-          <span class="tag">Level Design</span>
-          <span class="tag">GDD Writing</span>
         </div>
       </div>
 
       <div class="skill-card">
-        <h3>Environment &amp; World Building</h3>
+        <h3>Also Developing</h3>
         <div class="tag-list">
-          <span class="tag">Landscape Creation</span>
-          <span class="tag">Terrain Generation</span>
-          <span class="tag">Gaea</span>
-          <span class="tag">Environment Design</span>
-          <span class="tag">Map Blockouts</span>
-          <span class="tag">Navigation Setup</span>
-          <span class="tag">Lighting Basics</span>
+          <span class="tag">Environment Art (Gaea, Landscape/Terrain)</span>
+          <span class="tag">Character Modeling &amp; Animation (Blender)</span>
+          <span class="tag">Audio Design</span>
         </div>
-      </div>
-
-      <div class="skill-card">
-        <h3>Art &amp; Content Creation</h3>
-        <div class="tag-list">
-          <span class="tag">Blender</span>
-          <span class="tag">Basic Animation</span>
-          <span class="tag">Asset Integration</span>
-          <span class="tag">Character Setup</span>
-          <span class="tag">Animation Retargeting</span>
-          <span class="tag">Animation Integration</span>
-        </div>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:14px;">
+          Learning through personal projects &mdash; not professional-level yet.
+        </p>
       </div>
     </div>
   </div>
@@ -661,10 +554,10 @@
 <section id="projects">
   <div class="container">
     <div class="section-head reveal">
-      <div class="eyebrow">Featured Project</div>
-      <h2>Adaptive Combat Tool</h2>
-      <p>A Boss Combat System for Unreal Engine 5 &mdash; helping developers ship
-      adaptive boss encounters without writing AI logic from scratch.</p>
+      <div class="eyebrow">Projects</div>
+      <h2>What I've built</h2>
+      <p>Gameplay systems, AI tools, and combat design work — from solo tools to
+      team-built games.</p>
     </div>
 
     <div class="project-card reveal">
@@ -704,9 +597,11 @@
         <p>
           The tool tracks player attacks, dodges, distance, and health, then classifies
           the player's intent &mdash; Aggressive, Defensive, Panic, or Balanced &mdash; and
-          adjusts the boss's behaviour accordingly. Developers can use it in Fixed mode
-          for a single hand-picked behaviour, or Adaptive mode to let the boss respond
-          to the player automatically.
+          adjusts the boss's behaviour accordingly, so no two playthroughs fight the same
+          boss the same way. Built as an Editor Utility Widget so designers can tune
+          intent thresholds, decay rates, and combat parameters without touching code.
+          Developers can use it in Fixed mode for a single hand-picked behaviour, or
+          Adaptive mode to let the boss respond to the player automatically.
         </p>
 
         <div class="feature-grid">
@@ -737,9 +632,7 @@
         </div>
 
         <div class="links-row">
-          <a href="#">Project devlog &#8599;</a>
           <a href="https://www.youtube.com/watch?v=K2Ic_vrohZc" target="_blank">Gameplay demo &#8599;</a>
-          <a href="#">FYP report &#8599;</a>
         </div>
       </div>
     </div>
@@ -772,14 +665,19 @@
         <div class="project-tagrow">
           <span class="tag">Unreal Engine</span>
           <span class="tag">Survival Horror</span>
-          <span class="tag">Team Project</span>
+          <span class="tag">Project Lead</span>
         </div>
         <h3>Whispers of the Peak</h3>
-        <div class="project-sub">Workshop II Project &mdash; first-person survival horror</div>
+        <div class="project-sub">Workshop II Project &mdash; first-person survival horror, team of 4</div>
         <p>
-          A team-developed first-person survival horror game built in Unreal Engine.
-          I worked on gameplay design, combat and gameplay systems, core mechanics
-          planning, and technical implementation alongside the rest of the team.
+          I led design and execution across the full game: story, ending, environment
+          layout, and UI direction, plus hands-on work on character meshes, attack
+          animations, hitbox logic, and a surface-based footstep audio system &mdash;
+          distinct sounds for metal, wood, and snow depending on where the player is
+          standing. I directed the UI and level design teammates in detail on
+          implementation, reviewed and tested the team's work throughout, and cut the
+          trailer and cinematic myself, including camera work and creature sound design.
+          One teammate handled puzzle logic in Blueprint independently.
         </p>
         <div class="links-row">
           <a href="https://www.youtube.com/watch?v=IrEBV8qnQv4" target="_blank">Watch trailer &#8599;</a>
@@ -796,10 +694,6 @@
       <div>
         <div class="eyebrow">Contact</div>
         <h2 style="margin-bottom:20px;">Let's build something that fights back.</h2>
-        <p style="color:var(--text-muted); max-width:480px;">
-          Open to Game Programming internships and Gameplay/AI Programmer or
-          Technical Designer roles.
-        </p>
         <div class="pref-list">
           Open to: <span>Internships</span> &middot; <span>Remote</span> &middot; <span>Relocation</span>
         </div>
@@ -832,69 +726,6 @@
 </footer>
 
 <script>
-  // Adaptive Boss AI Monitor — cycles through the FYP's intent → boss mode mapping
-  const states = [
-    {
-      intent: "Balanced", attack: 48, dodge: 45,
-      mode: "Normal", desc: "Standard combat behaviour while the system reads the player.",
-      color: "var(--green)"
-    },
-    {
-      intent: "Aggressive", attack: 86, dodge: 22,
-      mode: "Counter", desc: "Punishes aggressive players who attack frequently.",
-      color: "var(--warn)"
-    },
-    {
-      intent: "Defensive", attack: 18, dodge: 81,
-      mode: "Chase Aggressive", desc: "Pressures defensive players who avoid combat.",
-      color: "var(--defense)"
-    },
-    {
-      intent: "Panic", attack: 30, dodge: 64,
-      mode: "Heavy Pressure", desc: "Overwhelms players identified as low-health and cautious.",
-      color: "var(--amber)"
-    },
-  ];
-
-  let i = 0;
-  const intentLabel = document.getElementById('intent-label');
-  const intentBar = document.getElementById('intent-bar');
-  const attackVal = document.getElementById('attack-val');
-  const attackBar = document.getElementById('attack-bar');
-  const dodgeVal = document.getElementById('dodge-val');
-  const dodgeBar = document.getElementById('dodge-bar');
-  const modeName = document.getElementById('mode-name');
-  const modeDesc = document.getElementById('mode-desc');
-
-  function applyState(s){
-    intentLabel.textContent = s.intent;
-    intentLabel.style.color = s.color;
-    intentBar.style.width = Math.max(s.attack, s.dodge) + "%";
-    intentBar.style.background = s.color;
-    intentBar.style.boxShadow = "0 0 12px " + s.color;
-
-    attackVal.textContent = s.attack + "%";
-    attackBar.style.width = s.attack + "%";
-    attackBar.style.background = "var(--warn)";
-    attackBar.style.boxShadow = "0 0 8px var(--warn)";
-
-    dodgeVal.textContent = s.dodge + "%";
-    dodgeBar.style.width = s.dodge + "%";
-    dodgeBar.style.background = "var(--defense)";
-    dodgeBar.style.boxShadow = "0 0 8px var(--defense)";
-
-    modeName.textContent = s.mode;
-    modeName.style.color = s.color;
-    modeName.style.textShadow = "0 0 16px " + s.color;
-    modeDesc.textContent = s.desc;
-  }
-
-  applyState(states[0]);
-  setInterval(() => {
-    i = (i + 1) % states.length;
-    applyState(states[i]);
-  }, 3200);
-
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
