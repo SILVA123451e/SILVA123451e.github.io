@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hmam Nooreldeen — Gameplay & AI Systems Programmer</title>
+<title>Hmam Nooreldeen — Game Developer | Combat & AI Systems | Unreal Engine 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -132,9 +132,33 @@
     align-items: center;
     padding-top: 90px;
     padding-bottom: 60px;
+    position: relative;
+    overflow: hidden;
   }
   .hero-solo{
     max-width: 760px;
+  }
+
+  /* soft glows drifting behind the hero text */
+  .hero-glow{
+    position: absolute;
+    width: 620px; height: 620px;
+    top: 8%; left: 52%;
+    border-radius: 50%;
+    background: radial-gradient(circle closest-side, rgba(94,240,216,0.16), rgba(94,240,216,0.07) 45%, rgba(94,240,216,0.02) 75%, rgba(94,240,216,0));
+    pointer-events: none;
+    animation: glowdrift 16s ease-in-out infinite alternate;
+  }
+  .hero-glow.two{
+    width: 460px; height: 460px;
+    top: 42%; left: 68%;
+    background: radial-gradient(circle closest-side, rgba(111,184,255,0.12), rgba(111,184,255,0.05) 45%, rgba(111,184,255,0.015) 75%, rgba(111,184,255,0));
+    animation-duration: 21s;
+    animation-direction: alternate-reverse;
+  }
+  @keyframes glowdrift{
+    from{ transform: translate(0, 0) scale(1); }
+    to{ transform: translate(-90px, 50px) scale(1.15); }
   }
 
   .hero h1{
@@ -142,7 +166,38 @@
     line-height: 1.1;
     margin-bottom: 18px;
   }
-  .hero h1 .highlight{ color: var(--accent); }
+  .hero h1 .highlight{ color: var(--accent); text-shadow: 0 0 28px rgba(94,240,216,0.35); }
+
+  /* typed line under the name */
+  .hero-typed{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    color: var(--text);
+    margin-bottom: 22px;
+    min-height: 1.6em;
+  }
+  .hero-typed .prompt{ color: var(--accent); margin-right: 4px; }
+  .hero-typed .typed{ color: var(--accent); }
+  .caret{
+    display: inline-block;
+    width: 0.55em; height: 1.1em;
+    margin-left: 3px;
+    vertical-align: -0.18em;
+    background: var(--accent);
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity: 0; } }
+
+  .sr-only{
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .hero p.lead{
     color: var(--text-muted);
     font-size: 1.1rem;
@@ -150,29 +205,18 @@
     margin-bottom: 32px;
   }
 
-  .hero-facts{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 48px;
+  /* staggered entrance for the hero content */
+  .hero-in > *{
+    opacity: 0;
+    transform: translateY(18px);
+    animation: heroIn 0.8s cubic-bezier(.2,.7,.2,1) forwards;
   }
-  .hf-item{
-    border: 1px solid var(--panel-border);
-    background: var(--panel);
-    border-radius: var(--radius);
-    padding: 12px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .hf-label{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .hf-val{ font-size: 0.85rem; color: var(--text); }
+  .hero-in > *:nth-child(2){ animation-delay: .12s; }
+  .hero-in > *:nth-child(3){ animation-delay: .24s; }
+  .hero-in > *:nth-child(5){ animation-delay: .36s; }
+  .hero-in > *:nth-child(6){ animation-delay: .48s; }
+  .hero-in > *:nth-child(7){ animation-delay: .6s; }
+  @keyframes heroIn{ to{ opacity: 1; transform: none; } }
 
   .scroll-cue{
     display: inline-flex;
@@ -409,9 +453,6 @@
   }
   .contact-row a:hover{ color: var(--accent); }
 
-  .pref-list{ color: var(--text-muted); font-size: 0.9rem; margin-top: 18px; }
-  .pref-list span{ color: var(--text); }
-
   footer{
     text-align: center;
     padding: 36px 0;
@@ -432,6 +473,7 @@
   @media (prefers-reduced-motion: reduce){
     *{ transition: none !important; animation: none !important; }
     .reveal{ opacity:1; transform:none; }
+    .hero-in > *{ opacity:1; transform:none; }
   }
 </style>
 </head>
@@ -451,22 +493,21 @@
 
 <!-- ================= HERO ================= -->
 <header class="hero">
-  <div class="container hero-solo">
-    <div class="eyebrow">Gameplay &amp; AI Systems Programmer</div>
-    <h1>Gameplay systems and <span class="highlight">AI-driven</span> combat, built in Unreal Engine 5.</h1>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-glow two" aria-hidden="true"></div>
+  <div class="container hero-solo hero-in">
+    <div class="eyebrow">Game Developer | Combat &amp; AI Systems | Unreal Engine 5</div>
+    <h1>Hi, I'm <span class="highlight">Hmam Nooreldeen</span>.</h1>
+    <p class="hero-typed" aria-hidden="true"><span class="prompt">&gt;</span> I work on <span class="typed" id="typed">combat feel</span><span class="caret"></span></p>
+    <p class="sr-only">I work on combat feel, AI and boss behaviour, and game mechanics.</p>
     <p class="lead">
-      Gameplay programmer working on combat systems, AI behaviour, and core mechanics
-      in Unreal Engine 5.
+      What I love most about game development is how a game feels to play: combat feel,
+      AI and boss behaviour, and how mechanics play. I build in Unreal Engine 5, mostly
+      with Blueprints and some C++.
     </p>
     <div class="btn-row">
       <a href="#projects" class="btn btn-primary">View Projects</a>
       <a href="#contact" class="btn btn-secondary">Get in touch</a>
-    </div>
-
-    <div class="hero-facts">
-      <div class="hf-item"><span class="hf-label">Engine</span><span class="hf-val">Unreal Engine 5 &middot; Blueprints &middot; C++</span></div>
-      <div class="hf-item"><span class="hf-label">Focus</span><span class="hf-val">Adaptive AI &middot; Combat Systems &middot; Tools</span></div>
-      <div class="hf-item"><span class="hf-label">Based in</span><span class="hf-val">Malaysia &middot; Open to relocation/remote</span></div>
     </div>
 
     <a href="#about" class="scroll-cue" aria-label="Scroll down">
@@ -483,26 +524,21 @@
         <div class="eyebrow">About</div>
         <h2 style="margin-bottom:20px;">Gameplay systems, AI design, and developer tools.</h2>
         <p>
-          I'm <strong>Hmam Nooreldeen Abdalla Altoom</strong>, a gameplay programmer
+          I'm <strong>Hmam Nooreldeen Abdalla Altoom</strong>, a game developer
           working across combat systems, AI behaviour, and full-pipeline execution.
           I like owning ideas end-to-end &mdash; designing a system and building it
           myself &mdash; and that's pushed me into environment art, animation, and
           audio along the way. I'm not trying to be a specialist in those, but I
           enjoy them and I'm actively getting better at them.
         </p>
-        <p>
-          My focus is gameplay programming and AI-driven combat.
-        </p>
-        <p>
-          I'm looking for <strong>Gameplay Programmer, Game Programmer, or AI
-          Programmer</strong> roles &mdash; open to relocation or remote.
-        </p>
       </div>
 
       <div class="stat-list">
+        <div class="stat"><span class="label">Experience</span><span class="val">Game Developer Intern &middot; Nimbus Games</span></div>
         <div class="stat"><span class="label">Education</span><span class="val">B.IT (Game Technology), UTeM</span></div>
+        <div class="stat"><span class="label">Engine</span><span class="val">Unreal Engine 5 &middot; Blueprints &middot; C++</span></div>
         <div class="stat"><span class="label">3D &amp; Animation</span><span class="val">Blender &middot; Retargeting &middot; Gaea</span></div>
-        <div class="stat"><span class="label">Availability</span><span class="val">Open to relocation &middot; Remote</span></div>
+        <div class="stat"><span class="label">Based in</span><span class="val">Malaysia</span></div>
       </div>
     </div>
   </div>
@@ -514,37 +550,63 @@
     <div class="section-head reveal">
       <div class="eyebrow">Skills</div>
       <h2>What I work with</h2>
-      <p>A toolkit built around gameplay programming, AI-driven systems, and the
+      <p>A toolkit built around combat, AI behaviour, and game mechanics, plus the
       environment and animation pipelines that support them.</p>
     </div>
 
     <div class="skills-grid reveal">
       <div class="skill-card">
-        <h3>Gameplay Programming</h3>
+        <h3>Gameplay &amp; Systems</h3>
         <div class="tag-list">
-          <span class="tag">Unreal Engine 5</span>
-          <span class="tag">Blueprints</span>
-          <span class="tag">C++</span>
-          <span class="tag">AI Systems Design</span>
-          <span class="tag">Combat Systems</span>
-          <span class="tag">Gameplay Programming</span>
-          <span class="tag">Editor Utility Widgets</span>
+          <span class="tag">Gameplay Systems</span>
+          <span class="tag">Combat Mechanics</span>
+          <span class="tag">AI Behavior</span>
+          <span class="tag">Player Intent Systems</span>
           <span class="tag">State Machines</span>
-          <span class="tag">Player-Intent Classification</span>
+          <span class="tag">Behaviour Systems</span>
           <span class="tag">Combat Balancing</span>
+          <span class="tag">Gameplay Prototyping</span>
         </div>
       </div>
 
       <div class="skill-card">
-        <h3>Also Developing</h3>
+        <h3>Game Design</h3>
         <div class="tag-list">
-          <span class="tag">Environment Art (Gaea, Landscape/Terrain)</span>
-          <span class="tag">Character Modeling &amp; Animation (Blender)</span>
-          <span class="tag">Audio Design</span>
+          <span class="tag">Systems Design</span>
+          <span class="tag">Combat Design</span>
+          <span class="tag">Game Mechanics</span>
+          <span class="tag">Player Experience</span>
+          <span class="tag">Encounter Design</span>
+          <span class="tag">Game Design Documentation</span>
+          <span class="tag">Level Design</span>
+          <span class="tag">Blockouts</span>
         </div>
-        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:14px;">
-          Learning through personal projects &mdash; not professional-level yet.
-        </p>
+      </div>
+
+      <div class="skill-card">
+        <h3>Technical Implementation</h3>
+        <div class="tag-list">
+          <span class="tag">Unreal Engine 5</span>
+          <span class="tag">Blueprint Visual Scripting</span>
+          <span class="tag">C++</span>
+          <span class="tag">Editor Utility Widgets</span>
+          <span class="tag">Animation Systems</span>
+          <span class="tag">Hit Detection</span>
+          <span class="tag">Navigation &amp; AI Setup</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3>Tools &amp; Workflow</h3>
+        <div class="tag-list">
+          <span class="tag">Git</span>
+          <span class="tag">Gaea</span>
+          <span class="tag">Blender</span>
+          <span class="tag">Asset Integration</span>
+          <span class="tag">Animation Retargeting</span>
+          <span class="tag">Terrain Generation</span>
+          <span class="tag">Environment Design</span>
+        </div>
       </div>
     </div>
   </div>
@@ -574,11 +636,11 @@
       <!-- Tool Screenshots Gallery -->
       <div style="display:block;padding:0;background:#0a0d12;position:relative;aspect-ratio:16/5;">
         <div id="gallery" style="width:100%;height:100%;position:relative;overflow:hidden;">
-          <img src="tool-1-welcome.png"      class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:1;transition:opacity 0.4s ease;">
-          <img src="tool-2-boss-setup.png"   class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
-          <img src="tool-3-player-setup.png" class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
-          <img src="tool-4-ai-behavior.png"  class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
-          <img src="tool-5-mode-editor.png"  class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-1-welcome.png" alt="Adaptive Combat Tool: boss selection screen"      class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:1;transition:opacity 0.4s ease;">
+          <img src="tool-2-boss-setup.png" alt="Adaptive Combat Tool: boss setup screen"   class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-3-player-setup.png" alt="Adaptive Combat Tool: player setup screen" class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-4-ai-behavior.png" alt="Adaptive Combat Tool: AI behaviour screen"  class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="tool-5-mode-editor.png" alt="Adaptive Combat Tool: mode editor screen"  class="gslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
         </div>
         <button onclick="moveSlide(-1)" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8249;</button>
         <button onclick="moveSlide(1)"  style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8250;</button>
@@ -590,24 +652,26 @@
           <span class="tag">Unreal Engine 5</span>
           <span class="tag">Editor Utility Widget</span>
           <span class="tag">Adaptive AI</span>
-          <span class="tag">Final Year Project</span>
         </div>
-        <h3>An adaptive boss, built for indie teams</h3>
+        <h3>Adaptive Combat Tool</h3>
         <div class="project-sub">Real-time player intent classification &rarr; dynamic boss behaviour</div>
         <p>
-          The tool tracks player attacks, dodges, distance, and health, then classifies
-          the player's intent &mdash; Aggressive, Defensive, Panic, or Balanced &mdash; and
-          adjusts the boss's behaviour accordingly, so no two playthroughs fight the same
-          boss the same way. Built as an Editor Utility Widget so designers can tune
-          intent thresholds, decay rates, and combat parameters without touching code.
-          Developers can use it in Fixed mode for a single hand-picked behaviour, or
-          Adaptive mode to let the boss respond to the player automatically.
+          An adaptive boss combat system built as an Unreal Engine 5 Editor Utility Widget.
+          It reads the player's attacks, dodges, distance, and health, classifies their
+          intent &mdash; Aggressive, Defensive, Panic, or Balanced &mdash; and switches the
+          boss between four modes: Normal, Counter, Chase Aggressive, and Heavy Pressure.
+          It runs in Adaptive mode or Fixed Rules mode, and includes an editor tool so
+          designers can configure encounters without touching gameplay code.
         </p>
 
         <div class="feature-grid">
           <div class="feature-item">
+            <div class="ft-title">Intent Classification</div>
+            <div class="ft-desc">Classifies the player as Aggressive, Defensive, Panic, or Balanced from attacks, dodges, distance, and health.</div>
+          </div>
+          <div class="feature-item">
             <div class="ft-title">Boss Modes</div>
-            <div class="ft-desc">Normal, Counter, Chase Aggressive, and Heavy Pressure &mdash; each tuned to respond to a different player intent.</div>
+            <div class="ft-desc">Normal, Counter, Chase Aggressive, and Heavy Pressure, run in Adaptive mode or Fixed Rules mode.</div>
           </div>
           <div class="feature-item">
             <div class="ft-title">Intent Tuning</div>
@@ -618,16 +682,12 @@
             <div class="ft-desc">Per-mode tuning of attack cooldown, attack/stop range, movement speed, and damage.</div>
           </div>
           <div class="feature-item">
-            <div class="ft-title">Player Integration</div>
-            <div class="ft-desc">Drop in a pre-built player setup, or wire the tool into an existing project with auto-setup and validation tools.</div>
+            <div class="ft-title">Designer Tooling</div>
+            <div class="ft-desc">Configure encounters in the editor without touching gameplay code, with auto-setup and validation tools.</div>
           </div>
           <div class="feature-item">
-            <div class="ft-title">Player Systems</div>
-            <div class="ft-desc">Light/heavy combo attacks, directional dodge, sprint, weapon hit detection, and combo queueing.</div>
-          </div>
-          <div class="feature-item">
-            <div class="ft-title">Boss Systems</div>
-            <div class="ft-desc">AI chasing and attacking, adaptive mode switching, weapon collision, and animation-driven combat.</div>
+            <div class="ft-title">Combat Systems</div>
+            <div class="ft-desc">Light/heavy combos, directional dodge, weapon hit detection, AI chase/attack, and animation-driven combat.</div>
           </div>
         </div>
 
@@ -652,10 +712,10 @@
       <!-- Whispers Screenshots -->
       <div style="display:block;padding:0;background:#0a0d12;position:relative;aspect-ratio:16/5;">
         <div id="wgallery" style="width:100%;height:100%;position:relative;overflow:hidden;">
-          <img src="whispers-1-outdoor.png"  class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:1;transition:opacity 0.4s ease;">
-          <img src="whispers-2-monster.png"  class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
-          <img src="whispers-3-editor.png"   class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
-          <img src="whispers-4-interior.png" class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="whispers-1-outdoor.png" alt="Whispers of the Peak: snowy mountain outdoors"  class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:1;transition:opacity 0.4s ease;">
+          <img src="whispers-2-monster.png" alt="Whispers of the Peak: creature"  class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="whispers-3-editor.png" alt="Whispers of the Peak: level in the Unreal Editor"   class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
+          <img src="whispers-4-interior.png" alt="Whispers of the Peak: cabin interior" class="wslide" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0d12;opacity:0;transition:opacity 0.4s ease;">
         </div>
         <button onclick="wmoveSlide(-1)" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8249;</button>
         <button onclick="wmoveSlide(1)"  style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:rgba(10,13,18,0.75);border:1px solid #1f2733;color:#5ef0d8;font-size:1.2rem;width:36px;height:36px;border-radius:4px;cursor:pointer;z-index:10;">&#8250;</button>
@@ -668,7 +728,7 @@
           <span class="tag">Project Lead</span>
         </div>
         <h3>Whispers of the Peak</h3>
-        <div class="project-sub">Workshop II Project &mdash; first-person survival horror, team of 4</div>
+        <div class="project-sub">Team project &mdash; first-person survival horror, team of 4</div>
         <p>
           I led design and execution across the full game: story, ending, environment
           layout, and UI direction, plus hands-on work on character meshes, attack
@@ -694,9 +754,6 @@
       <div>
         <div class="eyebrow">Contact</div>
         <h2 style="margin-bottom:20px;">Let's build something that fights back.</h2>
-        <div class="pref-list">
-          Open to: <span>Internships</span> &middot; <span>Remote</span> &middot; <span>Relocation</span>
-        </div>
       </div>
 
       <div class="contact-card">
@@ -726,6 +783,23 @@
 </footer>
 
 <script>
+  // ---- Hero typed line ----
+  (function(){
+    const el = document.getElementById('typed');
+    if(!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const phrases = ['combat feel', 'AI & boss behaviour', 'game mechanics'];
+    let p = 0, len = phrases[0].length, deleting = true;
+    function tick(){
+      len += deleting ? -1 : 1;
+      el.textContent = phrases[p].slice(0, len);
+      let delay = deleting ? 40 : 80;
+      if(deleting && len === 0){ deleting = false; p = (p + 1) % phrases.length; delay = 350; }
+      else if(!deleting && len === phrases[p].length){ deleting = true; delay = 2200; }
+      setTimeout(tick, delay);
+    }
+    setTimeout(tick, 2600);
+  })();
+
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
